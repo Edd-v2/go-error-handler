@@ -18,9 +18,8 @@ func LoadConfiguration() error {
 	viper.SetDefault("APP_NAME", "go-chat-room")
 	viper.SetDefault("APP_PORT", "8080")
 	viper.SetDefault("BASE_PATH", "test")
-	viper.SetDefault("ENV", "development")
+	viper.SetDefault("ENV", "production")
 
-	// Automatically read environment variables
 	err := readConfigFile("../your-path-file")
 
 	AppConfig = &Config{

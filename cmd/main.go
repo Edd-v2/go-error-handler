@@ -10,51 +10,41 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var log *logrus.Logger // Logger globale
-
 func main() {
-	err := config.LoadConfiguration()
-	// Configura Logrus con l'ambiente
-	// Cambia a "production" in base all'ambiente
-	log = logger.SetupLogger(config.AppConfig.Env)
-	if err != nil {
-		log.WithError(err).Warn("No configuration file found, using default values")
-	}
+	config.LoadConfiguration()
+
+	log := logger.SetupLogger(config.AppConfig.Env)
 	log.Info("Starting Go Server with Gin and Logrus...")
 
-	code := initServer()
-
-	if code != 0 {
-		log.Fatal("Failed to start server!")
+	if err := initServer(log); err != nil {
+		log.WithError(err).Fatal("Failed to start server!")
 	}
 }
 
-func initServer() int {
+func initServer(log *logrus.Logger) error {
 	router := gin.New()
-	router.Use(gin.Recovery())          // Middleware per recuperare dai panic
-	router.Use(middleware.ErrorHandler) // Middleware per la gestione degli errori
+	router.Use(gin.Recovery())
+	router.Use(middleware.ErrorHandler)
 
-	// Definizione delle rotte
-	router.GET(config.AppConfig.BasePath+"/tmpRequest", getDBFileData)
-	router.POST(config.AppConfig.BasePath+"/tmpInsert", writeOnDBFile)
-	router.DELETE(config.AppConfig.BasePath+"/tmpDelete", removeDataOnDBFile)
+	router.GET(config.AppConfig.BasePath+"/tmpRequest", func(c *gin.Context) {
+		getDBFileData(c, log)
+	})
+	router.POST(config.AppConfig.BasePath+"/tmpInsert", func(c *gin.Context) {
+		writeOnDBFile(c, log)
+	})
+	router.DELETE(config.AppConfig.BasePath+"/tmpDelete", func(c *gin.Context) {
+		removeDataOnDBFile(c, log)
+	})
 
-	// Avvio del server
-	if err := router.Run(":" + config.AppConfig.AppPort); err != nil {
-		log.WithError(err).Fatal("Failed to run server")
-		return -1
-	}
-
-	log.Info("Server running on port ", config.AppConfig.AppPort)
-	return 0
+	log.Infof("Server running on port %s", config.AppConfig.AppPort)
+	return router.Run(":" + config.AppConfig.AppPort)
 }
 
-func getDBFileData(c *gin.Context) {
+func getDBFileData(c *gin.Context, log *logrus.Logger) {
 	log.Info("Processing getDBFileData request...")
 
-	// Simulazione di un errore
 	if true {
-		err := c.Error(http.ErrBodyNotAllowed) // Registra l'errore nel contesto
+		err := c.Error(http.ErrBodyNotAllowed)
 		log.WithError(err).Warn("Handled a bad request")
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
 		return
@@ -63,12 +53,12 @@ func getDBFileData(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": "some data"})
 }
 
-func writeOnDBFile(c *gin.Context) {
+func writeOnDBFile(c *gin.Context, log *logrus.Logger) {
 	log.Info("Processing writeOnDBFile request...")
 	c.JSON(http.StatusCreated, gin.H{"message": "Data written successfully"})
 }
 
-func removeDataOnDBFile(c *gin.Context) {
+func removeDataOnDBFile(c *gin.Context, log *logrus.Logger) {
 	log.Info("Processing removeDataOnDBFile request...")
 	c.JSON(http.StatusOK, gin.H{"message": "Data removed successfully"})
 }
