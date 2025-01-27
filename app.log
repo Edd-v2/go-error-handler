@@ -8,3 +8,11 @@ time="2025-01-27T15:57:04+01:00" level=warning msg="Handled a bad request" error
 time="2025-01-27T15:58:40+01:00" level=info msg="Processing writeOnDBFile request..."
 time="2025-01-27T15:58:54+01:00" level=info msg="Processing getDBFileData request..."
 time="2025-01-27T15:58:54+01:00" level=warning msg="Handled a bad request" error="http: request method or response status code does not allow body"
+{"level":"info","msg":"Starting Go Server with Gin and Logrus...","time":"2025-01-27T16:14:54+01:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-27T16:14:54+01:00"}
+{"error":"listen tcp :8080: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.","level":"fatal","msg":"Failed to start server!","time":"2025-01-27T16:14:54+01:00"}
+{"level":"info","msg":"Starting Go Server with Gin and Logrus...","time":"2025-01-27T16:15:16+01:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-27T16:15:16+01:00"}
+{"level":"info","msg":"Processing getDBFileData request...","time":"2025-01-27T16:15:33+01:00"}
+{"error":"http: request method or response status code does not allow body","level":"warning","msg":"Handled a bad request","time":"2025-01-27T16:15:33+01:00"}
+{"level":"info","msg":"Processing writeOnDBFile request...","time":"2025-01-27T16:15:46+01:00"}
